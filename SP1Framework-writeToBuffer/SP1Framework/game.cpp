@@ -6,12 +6,15 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <stdio.h>
 #include "Framework\timer.h"
 int monsterdelay = 0; 
 int monster1delay = 0;
 int whipdelay = 0;
 int health = 3;
 int ammo = 5;
+int bomb = 3;
+FILE *map;
 
 // Console object
 
@@ -24,32 +27,32 @@ double deltaTime;
 bool keyPressed[K_COUNT];
 
 // Initial print map
-int printMap[MAP_HEIGHT][MAP_WIDTH] = {
+char printMap[MAP_HEIGHT][MAP_WIDTH] = {
     { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
     { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-    { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 9, 2, 0, 1, 0, 1, 1, 1, 1, 2, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
-    { 1, 1, 2, 1, 1, 0, 1, 1, 2, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 2, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
-    { 1, 1, 0, 1, 1, 0, 1, 1, 2, 1, 1, 2, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 2, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
-    { 1, 1, 2, 0, 0, 2, 0, 2, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 2, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
-    { 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
-    { 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
-    { 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
-    { 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
-    { 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
-    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
-    { 1, 1, 1, 1, 1, 1, 1, 0, 0, 2, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
-    { 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
-    { 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 9, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
-    { 1, 1, 0, 0, 0, 1, 1, 3, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 2, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
-    { 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 2, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
-    { 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
-    { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
-    { 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
-    { 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
-    { 1, 1, 0, 0, 0, 0, 2, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
-    { 1, 1, 0, 1, 1, 1, 0, 0, 0, 2, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
-    { 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
-    { 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 9, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
+    { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 9, 2, 0, 1, 0, 1, 1, 1, 1, 2, 0, 0, 0, 1, 1, 0, 0, 0, 3, 0, 0, 3, 0, 0, 0, 1, 1 },
+    { 1, 1, 2, 1, 1, 0, 1, 1, 2, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 2, 0, 1, 1, 0, 0, 3, 3, 3, 3, 3, 3, 0, 0, 1, 1 },
+    { 1, 1, 0, 1, 1, 7, 1, 1, 2, 1, 1, 2, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 2, 1, 1, 0, 1, 1, 0, 3, 3, 3, 3, 3, 3, 3, 3, 0, 1, 1 },
+    { 1, 1, 2, 0, 0, 2, 0, 2, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 2, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1 },
+    { 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 0, 1, 1 },
+    { 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1 },
+    { 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 1, 1 },
+    { 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 1, 1 },
+    { 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1 },
+    { 1, 1, 1, 1, 1, 1, 1, 0, 0, 2, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 6, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1 },
+    { 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1 },
+    { 1, 1, 9, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 9, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 9, 1, 1 },
+    { 1, 1, 0, 0, 0, 1, 1, 7, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 2, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1 },
+    { 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 2, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1 },
+    { 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1 },
+    { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1 },
+    { 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 1 },
+    { 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1 },
+    { 1, 1, 0, 0, 0, 0, 2, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1 },
+    { 1, 1, 0, 1, 1, 1, 0, 0, 0, 2, 0, 0, 1, 1, 0, 0, 7, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1 },
+    { 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1 },
+    { 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 7, 1, 1, 0, 9, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1 },
     { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
     { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
 };
@@ -149,6 +152,17 @@ void render()
 void renderMap()
 {
     //Print Map
+    /* 0 = nothing
+    1 = wall
+    2 = trap
+    3 = trap
+    4 = bomb
+    5 = health
+    6 = spawn
+    7 = ammo
+    8 = door
+    9 = set bomb
+    */
     COORD c;
     std::cout << std::endl;
     std::cout << std::endl;
@@ -156,15 +170,30 @@ void renderMap()
         c.Y = i;
         for (int j = 0; j < MAP_WIDTH; j++){
             c.X = j;
+            //WALLS
             if (printMap[i][j] == 1){
-                console.writeToBuffer(c, (char)219, 0x03);
+                console.writeToBuffer(c, '|', 0x03);
             }
+            // 2-5 traps
             else if (printMap[i][j] == 2){
-                console.writeToBuffer(c, (char)177, 0x0C);
+                console.writeToBuffer(c, (char)247, 0x0C);
             }
+            else if (printMap[i][j] == 3){
+                console.writeToBuffer(c, '^');
+            }
+            //6 Bomb
+            else if (printMap[i][j] == 6){
+                console.writeToBuffer(c, (char)235, 0x0B);
+            }
+            //7 ammo
+            else if (printMap[i][j] == 7){
+                console.writeToBuffer(c, (char)240);
+            }
+            //8 is health
             else if (printMap[i][j] == 3){
                 console.writeToBuffer(c, (char)240);
             }
+            //9 spawn points
             else if (printMap[i][j] == 9){
                 console.writeToBuffer(c, (char)241);
             }
@@ -177,6 +206,17 @@ void renderMap()
 	minimap();
 	HUD();
 }
+/* 0 = nothing 
+    1 = wall
+    2 = trap
+    3 = trap
+    4 = bomb 
+    5 = health
+    6 = spawn
+    7 = ammo
+    8 = door 
+    9 = set bomb
+*/
 void moveCharacter()
 {
 	monsterdelay++;
@@ -269,6 +309,12 @@ void moveCharacter()
                 charLocation.X += 1;
             }
         }
+        else if (keyPressed[K_E])
+        {
+            if (printMap[charLocation.Y][charLocation.X] != 6){
+            }
+
+        }
         refill();
 }
 void processUserInput()
@@ -287,9 +333,9 @@ void clearScreen()
 void renderCharacter()
 {
     // Draw the location of the character
-    console.writeToBuffer(charLocation, (char)233, 0x0D);
-	console.writeToBuffer(g_cChaserLoc, (char)5, 0x0C);
-	console.writeToBuffer(g_cChaser1Loc, (char)5, 0x0C);
+    console.writeToBuffer(charLocation, (char)232, 0x0E);
+    console.writeToBuffer(g_cChaserLoc, (char)238, 0x0C);
+    console.writeToBuffer(g_cChaser1Loc, (char)238, 0x0C);
 }
 
 void renderFramerate()
@@ -317,47 +363,10 @@ void renderToScreen()
 }
 //collision check/damage calculation
 void collision(){
-    if (charLocation.X - 1 == g_cChaserLoc.X && charLocation.Y + 1 == g_cChaserLoc.Y){
-		monsterDeath();
+    if (charLocation.X == g_cChaserLoc.X && charLocation.Y == g_cChaserLoc.Y){
 		health -= 1;
+        monsterDeath();
 	} // Top left
-	else if (charLocation.X == g_cChaserLoc.X && charLocation.Y + 1 == g_cChaserLoc.Y){
-		g_cChaserLoc.X = 26;
-		monsterDeath();
-		health -= 1;
-	} // Top Middle
-	else if (charLocation.X + 1 == g_cChaserLoc.X && charLocation.Y + 1 == g_cChaserLoc.Y){
-		g_cChaserLoc.X = 26;
-		monsterDeath();
-		health -= 1;
-	} // Top Right
-	else if (charLocation.X - 1 == g_cChaserLoc.X && charLocation.Y == g_cChaserLoc.Y){
-		monsterDeath();
-		health -= 1;
-	} // Left
-	else if (charLocation.X == g_cChaserLoc.X  && charLocation.Y == g_cChaserLoc.Y){
-		monsterDeath();
-		health -= 1;
-
-	} // Middle
-	else if (charLocation.X + 1 == g_cChaserLoc.X && charLocation.Y == g_cChaserLoc.Y){
-		g_cChaserLoc.X = 26;
-		monsterDeath();
-		health -= 1;
-	} // Right
-
-	else if (charLocation.X - 1 == g_cChaserLoc.X && charLocation.Y - 1 == g_cChaserLoc.Y){
-		monsterDeath();
-		health -= 1;
-	} // Btm Left
-	else if (charLocation.X == g_cChaserLoc.X && charLocation.Y - 1 == g_cChaserLoc.Y){
-		monsterDeath();
-		health -= 1;
-	} // Btm Middle
-	else if (charLocation.X + 1 == g_cChaserLoc.X && charLocation.Y - 1 == g_cChaserLoc.Y){
-		monsterDeath();
-		health -= 1;
-	} // Btm Right 
 }
 // PROJECTILE
 void projectile() {
@@ -469,7 +478,7 @@ void HUD() {
 	for (int m = 0; m < health; m++){
 		c.X = console.getConsoleSize().X - 21 + m;
 		c.Y = console.getConsoleSize().Y - 15;
-		console.writeToBuffer(c, (char)235);
+		console.writeToBuffer(c, (char)233);
 	}
 }
 void randomSeed(){
@@ -560,47 +569,45 @@ void monster1Death(){
 	}
 }
 void collision1(){
-	if (charLocation.X - 1 == g_cChaser1Loc.X && charLocation.Y + 1 == g_cChaser1Loc.Y){
+	if (charLocation.X == g_cChaser1Loc.X && charLocation.Y  == g_cChaser1Loc.Y){
 		monster1Death();
 		health -= 1;
 	} // Top left
-	else if (charLocation.X == g_cChaser1Loc.X && charLocation.Y + 1 == g_cChaser1Loc.Y){
-		monster1Death();
-		health -= 1;
-	} // Top Middle
-	else if (charLocation.X + 1 == g_cChaser1Loc.X && charLocation.Y + 1 == g_cChaser1Loc.Y){
-		monster1Death();
-		health -= 1;
-	} // Top Right
-	else if (charLocation.X - 1 == g_cChaser1Loc.X && charLocation.Y == g_cChaser1Loc.Y){
-		monster1Death();
-		health -= 1;
-	} // Left
-	else if (charLocation.X == g_cChaser1Loc.X  && charLocation.Y == g_cChaser1Loc.Y){
-		monster1Death();
-	} // Middle
-	else if (charLocation.X + 1 == g_cChaser1Loc.X && charLocation.Y == g_cChaser1Loc.Y){
-		monster1Death();
-		health -= 1;
-	} // Right
-
-	else if (charLocation.X - 1 == g_cChaser1Loc.X && charLocation.Y - 1 == g_cChaser1Loc.Y){
-		monster1Death();
-		health -= 1;
-	} // Btm Left
-	else if (charLocation.X == g_cChaser1Loc.X && charLocation.Y - 1 == g_cChaser1Loc.Y){
-		monster1Death();
-		health -= 1;
-	} // Btm Middle
-	else if (charLocation.X + 1 == g_cChaser1Loc.X && charLocation.Y - 1 == g_cChaser1Loc.Y){
-		monster1Death();
-		health -= 1;
-	} // Btm Right 
 }
 void refill(){
-    if (printMap[charLocation.Y][charLocation.X] == 3){
+    // 7 is AMMO
+    if (printMap[charLocation.Y][charLocation.X] == 7){
         printMap[charLocation.Y][charLocation.X] = 0;
         ammo += 10;
     }
 
 }
+void bombrefill(){
+    if (printMap[charLocation.Y][charLocation.X] == 6){
+        printMap[charLocation.Y][charLocation.X] = 0;
+        bomb += 1;
+    }
+}
+void mapChange(){
+    int c;
+    fopen("library.txt", "r");
+    if (map == NULL) {
+        printMap[0][0] = 0;
+    }
+    else {
+        while ((c = fgetc(map)) != EOF){
+            for (int i = 0; i < MAP_HEIGHT; i++){
+                for (int j = 0; j < MAP_WIDTH; j++){
+                    if (isdigit(fgetc(map))){
+                        printMap[i][j] = fgetc(map) - 48;
+                    }
+                    else if (isalpha(fgetc(map))){
+                        printMap[i][j] = fgetc(map);
+                    }
+                }
+            }
+        }
+        fclose(map);
+    }
+}
+

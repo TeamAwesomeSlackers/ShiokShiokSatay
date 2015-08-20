@@ -16,7 +16,8 @@ void mainLoop();
 
 int main()
 {
-    randomSeed();    // Seeding
+    randomSeed();
+    mapChange(); // Seeding
 	init();      // initialize your variables
     mainLoop();  // main loop
     shutdown();  // do clean up, if any. free memory.
