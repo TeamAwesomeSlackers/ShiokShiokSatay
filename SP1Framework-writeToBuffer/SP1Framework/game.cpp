@@ -145,13 +145,13 @@ void renderMap()
         for (int j = 0; j < MAP_WIDTH; j++){
             c.X = j;
             if (printMap[i][j] == 1){
-                console.writeToBuffer(c, "|");
+                console.writeToBuffer(c, (char)219, 0x03);
             }
             else if (printMap[i][j] == 2){
-                console.writeToBuffer(c, "^");
+                console.writeToBuffer(c, (char)177, 0x0C);
             }
             else if (printMap[i][j] == 9){
-                console.writeToBuffer(c, "+");
+                console.writeToBuffer(c, (char)241);
             }
             else{
                 console.writeToBuffer(c, " ");
@@ -294,7 +294,7 @@ void clearScreen()
 void renderCharacter()
 {
     // Draw the location of the character
-    console.writeToBuffer(charLocation, (char)1, 0x0B);
+    console.writeToBuffer(charLocation, (char)233, 0x0D);
 	console.writeToBuffer(g_cChaserLoc, (char)5, 0x0C);
 }
 
@@ -504,7 +504,7 @@ void randomSeed(){
 }
 void moveMonster(){
     // CHASER MOVEMENT
-    if (delay == 2){
+    if (delay == 10){
         if (charLocation.Y < g_cChaserLoc.Y){
             g_cChaserLoc.Y -= 1;
             Beep(1440, 30);
