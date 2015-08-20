@@ -11,6 +11,7 @@ int monsterdelay = 0;
 int monster1delay = 0;
 int whipdelay = 0;
 int health = 3;
+int ammo = 5;
 
 // Console object
 
@@ -38,8 +39,8 @@ int printMap[MAP_HEIGHT][MAP_WIDTH] = {
     { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
     { 1, 1, 1, 1, 1, 1, 1, 0, 0, 2, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
     { 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
-    { 1, 1, 3, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 9, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
-    { 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 2, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
+    { 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 9, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
+    { 1, 1, 0, 0, 0, 1, 1, 3, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 2, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
     { 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 2, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
     { 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
     { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
@@ -52,7 +53,6 @@ int printMap[MAP_HEIGHT][MAP_WIDTH] = {
     { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
     { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
 };
-
 
 // Game specific variables here
 COORD charLocation;
@@ -73,7 +73,6 @@ void init()
     g_cChaserLoc.Y = 2;
 	g_cChaser1Loc.X = 26;
 	g_cChaser1Loc.Y = 24;
-
     // sets the width, height and the font name to use in the console
     console.setConsoleFont(0, 16, L"Consolas");
 }
@@ -124,7 +123,6 @@ void update(double dt)
     // get the delta time
     elapsedTime += dt;
     deltaTime = dt;
-
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
     moveCharacter();    // moves the character, collision detection, physics, etc
     // sound can be played here too.
@@ -164,6 +162,9 @@ void renderMap()
             else if (printMap[i][j] == 2){
                 console.writeToBuffer(c, (char)177, 0x0C);
             }
+            else if (printMap[i][j] == 3){
+                console.writeToBuffer(c, (char)240);
+            }
             else if (printMap[i][j] == 9){
                 console.writeToBuffer(c, (char)241);
             }
@@ -176,8 +177,6 @@ void renderMap()
 	minimap();
 	HUD();
 }
-
-
 void moveCharacter()
 {
 	monsterdelay++;
@@ -270,6 +269,7 @@ void moveCharacter()
                 charLocation.X += 1;
             }
         }
+        refill();
 }
 void processUserInput()
 {
@@ -361,68 +361,74 @@ void collision(){
 }
 // PROJECTILE
 void projectile() {
-		if (keyPressed[K_W]) {
-			g_cProjectile.X = charLocation.X;
-			g_cProjectile.Y = charLocation.Y - 1;
-			for (int i = 0; i < 2; ++i) {
-				if (printMap[g_cProjectile.Y][g_cProjectile.X] != 1){
-					console.writeToBuffer(g_cProjectile, '|', 0x0B);
-					projKill();
-					projKill1();
-					g_cProjectile.Y -= 1;
-				}
-				else{
-					break;
-				}
-			}
-		}
-		else if (keyPressed[K_A]) {
-			g_cProjectile.X = charLocation.X - 1;
-			g_cProjectile.Y = charLocation.Y;
-			for (int i = 0; i < 2; ++i) {
-				if (printMap[g_cProjectile.Y][g_cProjectile.X] != 1){
-					console.writeToBuffer(g_cProjectile, '-', 0x0B);
-					projKill();
-					projKill1();
-					g_cProjectile.X -= 1;
-				}
-				else{
-					break;
-				}
-			}
-		}
-		else if (keyPressed[K_S]) {
-			whipdelay = 0;
-			g_cProjectile.X = charLocation.X;
-			g_cProjectile.Y = charLocation.Y + 1;
-			for (int i = 0; i < 2; ++i) {
-				if (printMap[g_cProjectile.Y][g_cProjectile.X] != 1){
-					console.writeToBuffer(g_cProjectile, '|', 0x0B);
-					projKill();
-					projKill1();
-					g_cProjectile.Y += 1;
-				}
-				else{
-					break;
-				}
-			}
-		}
-		else if (keyPressed[K_D]) {
-			g_cProjectile.X = charLocation.X + 1;
-			g_cProjectile.Y = charLocation.Y;
-			for (int i = 0; i < 2; ++i) {
-				if (printMap[g_cProjectile.Y][g_cProjectile.X] != 1){
-					console.writeToBuffer(g_cProjectile, '-', 0x0B);
-					projKill();
-					projKill1();
-					g_cProjectile.X += 1;
-				}
-				else{
-					break;
-				}
-			}
-		}
-	}
+    if (ammo >= 0){
+        if (keyPressed[K_W]) {
+            ammo -= 1;
+            g_cProjectile.X = charLocation.X;
+            g_cProjectile.Y = charLocation.Y - 1;
+            for (int i = 0; i < 2; ++i) {
+                if (printMap[g_cProjectile.Y][g_cProjectile.X] != 1){
+                    console.writeToBuffer(g_cProjectile, (char)30, 0x0B);
+                    projKill();
+                    projKill1();
+                    g_cProjectile.Y -= 1;
+                }
+                else{
+                    break;
+                }
+            }
+        }
+        else if (keyPressed[K_A]) {
+            ammo -= 1;
+            g_cProjectile.X = charLocation.X - 1;
+            g_cProjectile.Y = charLocation.Y;
+            for (int i = 0; i < 2; ++i) {
+                if (printMap[g_cProjectile.Y][g_cProjectile.X] != 1){
+                    console.writeToBuffer(g_cProjectile, (char)17, 0x0B);
+                    projKill();
+                    projKill1();
+                    g_cProjectile.X -= 1;
+                }
+                else{
+                    break;
+                }
+            }
+        }
+        else if (keyPressed[K_S]) {
+            ammo -= 1;
+            whipdelay = 0;
+            g_cProjectile.X = charLocation.X;
+            g_cProjectile.Y = charLocation.Y + 1;
+            for (int i = 0; i < 2; ++i) {
+                if (printMap[g_cProjectile.Y][g_cProjectile.X] != 1){
+                    console.writeToBuffer(g_cProjectile, (char)31, 0x0B);
+                    projKill();
+                    projKill1();
+                    g_cProjectile.Y += 1;
+                }
+                else{
+                    break;
+                }
+            }
+        }
+        else if (keyPressed[K_D]) {
+            ammo -= 1;
+            g_cProjectile.X = charLocation.X + 1;
+            g_cProjectile.Y = charLocation.Y;
+            for (int i = 0; i < 2; ++i) {
+                if (printMap[g_cProjectile.Y][g_cProjectile.X] != 1){
+                    console.writeToBuffer(g_cProjectile, (char)16, 0x0B);
+                    projKill();
+                    projKill1();
+                    g_cProjectile.X += 1;
+                }
+                else{
+                    break;
+                }
+            }
+        }
+    }
+}
 
 
 void minimap() {
@@ -590,4 +596,11 @@ void collision1(){
 		monster1Death();
 		health -= 1;
 	} // Btm Right 
+}
+void refill(){
+    if (printMap[charLocation.Y][charLocation.X] == 3){
+        printMap[charLocation.Y][charLocation.X] = 0;
+        ammo += 10;
+    }
+
 }

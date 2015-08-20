@@ -48,6 +48,7 @@ void monster1Death();
 void collision1();
 void projKill1();
 void projKill();
+void refill();
 
 
 #endif // _GAME_H
