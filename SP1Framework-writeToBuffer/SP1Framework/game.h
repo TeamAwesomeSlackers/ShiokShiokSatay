@@ -8,12 +8,16 @@ extern bool g_quitGame;
 
 enum Keys
 {
-    K_UP,
-    K_DOWN,
-    K_LEFT,
-    K_RIGHT,
-    K_ESCAPE,
+	K_UP,
+	K_DOWN,
+	K_LEFT,
+	K_RIGHT,
+	K_ESCAPE,
 	K_SPACE,
+	K_W,
+	K_A,
+	K_S,
+	K_D,
     K_COUNT
 };
 
@@ -37,7 +41,13 @@ void minimap();
 void HUD();
 void switchPath();
 void moveMonster();
-
+void moveMonster1();
+void projectile();
+void monsterDeath();
+void monster1Death();
+void collision1();
+void projKill1();
+void projKill();
 
 
 #endif // _GAME_H

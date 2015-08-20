@@ -7,7 +7,9 @@
 #include <iomanip>
 #include <sstream>
 #include "Framework\timer.h"
-int delay = 0;
+int monsterdelay = 0; 
+int monster1delay = 0;
+int whipdelay = 0;
 int health = 3;
 
 // Console object
@@ -56,6 +58,8 @@ int printMap[MAP_HEIGHT][MAP_WIDTH] = {
 COORD charLocation;
 COORD	g_cConsoleSize;
 COORD	g_cChaserLoc;
+COORD	g_cChaser1Loc;
+COORD	g_cProjectile;
 COORD CurentLocation;
 // Initialize variables, allocate memory, load data from file, etc. 
 // This is called once before entering into your main loop
@@ -67,6 +71,9 @@ void init()
     charLocation.Y = 14;
 	g_cChaserLoc.X = 26;
     g_cChaserLoc.Y = 2;
+	g_cChaser1Loc.X = 26;
+	g_cChaser1Loc.Y = 24;
+
     // sets the width, height and the font name to use in the console
     console.setConsoleFont(0, 16, L"Consolas");
 }
@@ -96,6 +103,10 @@ void getInput()
     keyPressed[K_RIGHT] = isKeyPressed(VK_RIGHT);
     keyPressed[K_ESCAPE] = isKeyPressed(VK_ESCAPE);
 	keyPressed[K_SPACE] = isKeyPressed(VK_SPACE);
+	keyPressed[K_W] = isKeyPressed('W');
+	keyPressed[K_A] = isKeyPressed('A');
+	keyPressed[K_S] = isKeyPressed('S');
+	keyPressed[K_D] = isKeyPressed('D');
 }
 
 /*
@@ -129,8 +140,11 @@ void render()
 {
     clearScreen();      // clears the current screen and draw from scratch 
     renderMap();        // renders the map to the buffer first
-    renderCharacter();
-    moveMonster();// renders the character into the buffer
+    moveMonster();		//moves the monsters
+	moveMonster1();
+    renderMap(); // renders the character into the buffer
+	projectile();// renders the map to the buffer first
+    renderCharacter();  // renders the character into the buffer
     renderFramerate();  // renders debug information, frame rate, elapsed time, etc
 	renderToScreen();// dump the contents of the buffer to the screen, one frame worth of game
 }
@@ -166,7 +180,8 @@ void renderMap()
 
 void moveCharacter()
 {
-	delay++;
+	monsterdelay++;
+	monster1delay++;
         //PLAYER MOVEMENT
         // JUMP UP
         if (keyPressed[K_UP] && keyPressed[K_SPACE] && charLocation.Y > 0)
@@ -256,28 +271,6 @@ void moveCharacter()
             }
         }
 }
-
-void switchPath() {
-	//if (g_cChaserLoc.X + 1 == 1 || g_cChaserLoc.Y + 1 == 1 || g_cChaserLoc.X - 1 == 1 || g_cChaserLoc.Y - 1 == 1) {
-	//	std::this_thread::sleep_for(std::chrono::seconds(1));
-	//	if (g_cChaserLoc.X + 1 == 0) {
-	//		g_cChaserLoc.X += 1;
-	//	}
-	//	else if (g_cChaserLoc.X - 1 == 0) {
-	//		g_cChaserLoc.X -= 1;
-	//	}
-	//	else if (g_cChaserLoc.Y + 1 == 0) {
-	//		g_cChaserLoc.Y += 1;
-	//	}
-	//	else if (g_cChaserLoc.Y - 1 == 0) {
-	//		g_cChaserLoc.Y -= 1;
-	//	}
-	//}
-	//else {
-
-	//}
-}
-
 void processUserInput()
 {
     // quits the game if player hits the escape key
@@ -296,6 +289,7 @@ void renderCharacter()
     // Draw the location of the character
     console.writeToBuffer(charLocation, (char)233, 0x0D);
 	console.writeToBuffer(g_cChaserLoc, (char)5, 0x0C);
+	console.writeToBuffer(g_cChaser1Loc, (char)5, 0x0C);
 }
 
 void renderFramerate()
@@ -323,138 +317,114 @@ void renderToScreen()
 }
 //collision check/damage calculation
 void collision(){
-    int spawnLocation = rand() % 3;
     if (charLocation.X - 1 == g_cChaserLoc.X && charLocation.Y + 1 == g_cChaserLoc.Y){
-        g_cChaserLoc.X = 26;
-        if (spawnLocation == 0){
-            g_cChaserLoc.Y = 2;
-        }
-        else if (spawnLocation == 1){
-            g_cChaserLoc.Y = 14;
-        }
-        else{
-            g_cChaserLoc.Y = 24;
-
-        }
+		monsterDeath();
 		health -= 1;
 	} // Top left
 	else if (charLocation.X == g_cChaserLoc.X && charLocation.Y + 1 == g_cChaserLoc.Y){
 		g_cChaserLoc.X = 26;
-        if (spawnLocation == 0){
-            g_cChaserLoc.Y = 2;
-        }
-        else if (spawnLocation == 1){
-            g_cChaserLoc.Y = 14;
-        }
-        else{
-            g_cChaserLoc.Y = 24;
-
-        }
+		monsterDeath();
 		health -= 1;
 	} // Top Middle
 	else if (charLocation.X + 1 == g_cChaserLoc.X && charLocation.Y + 1 == g_cChaserLoc.Y){
 		g_cChaserLoc.X = 26;
-        if (spawnLocation == 0){
-            g_cChaserLoc.Y = 2;
-        }
-        else if (spawnLocation == 1){
-            g_cChaserLoc.Y = 14;
-        }
-        else{
-            g_cChaserLoc.Y = 24;
-
-        }
+		monsterDeath();
 		health -= 1;
 	} // Top Right
 	else if (charLocation.X - 1 == g_cChaserLoc.X && charLocation.Y == g_cChaserLoc.Y){
-		g_cChaserLoc.X = 26;
-        if (spawnLocation == 0){
-            g_cChaserLoc.Y = 2;
-        }
-        else if (spawnLocation == 1){
-            g_cChaserLoc.Y = 14;
-        }
-        else{
-            g_cChaserLoc.Y = 24;
-
-        }
-		gotoXY(g_cChaserLoc);
+		monsterDeath();
 		health -= 1;
 	} // Left
 	else if (charLocation.X == g_cChaserLoc.X  && charLocation.Y == g_cChaserLoc.Y){
-		g_cChaserLoc.X = 26;
-        if (spawnLocation == 0){
-            g_cChaserLoc.Y = 2;
-        }
-        else if (spawnLocation == 1){
-            g_cChaserLoc.Y = 14;
-        }
-        else{
-            g_cChaserLoc.Y = 24;
-
-        }
+		monsterDeath();
 		health -= 1;
 
 	} // Middle
 	else if (charLocation.X + 1 == g_cChaserLoc.X && charLocation.Y == g_cChaserLoc.Y){
 		g_cChaserLoc.X = 26;
-        if (spawnLocation == 0){
-            g_cChaserLoc.Y = 2;
-        }
-        else if (spawnLocation == 1){
-            g_cChaserLoc.Y = 14;
-        }
-        else{
-            g_cChaserLoc.Y = 24;
-
-        }
+		monsterDeath();
 		health -= 1;
 	} // Right
 
 	else if (charLocation.X - 1 == g_cChaserLoc.X && charLocation.Y - 1 == g_cChaserLoc.Y){
-		g_cChaserLoc.X = 26;
-        if (spawnLocation == 0){
-            g_cChaserLoc.Y = 2;
-        }
-        else if (spawnLocation == 1){
-            g_cChaserLoc.Y = 14;
-        }
-        else{
-            g_cChaserLoc.Y = 24;
-
-        }
+		monsterDeath();
 		health -= 1;
 	} // Btm Left
 	else if (charLocation.X == g_cChaserLoc.X && charLocation.Y - 1 == g_cChaserLoc.Y){
-		g_cChaserLoc.X = 26;
-        if (spawnLocation == 0){
-            g_cChaserLoc.Y = 2;
-        }
-        else if (spawnLocation == 1){
-            g_cChaserLoc.Y = 14;
-        }
-        else{
-            g_cChaserLoc.Y = 24;
-
-        }
+		monsterDeath();
 		health -= 1;
 	} // Btm Middle
 	else if (charLocation.X + 1 == g_cChaserLoc.X && charLocation.Y - 1 == g_cChaserLoc.Y){
-		g_cChaserLoc.X = 26;
-        if (spawnLocation == 0){
-            g_cChaserLoc.Y = 2;
-        }
-        else if (spawnLocation == 1){
-            g_cChaserLoc.Y = 14;
-        }
-        else{
-            g_cChaserLoc.Y = 24;
-
-        }
+		monsterDeath();
 		health -= 1;
 	} // Btm Right 
 }
-// MINIMAp
+// PROJECTILE
+void projectile() {
+		if (keyPressed[K_W]) {
+			g_cProjectile.X = charLocation.X;
+			g_cProjectile.Y = charLocation.Y - 1;
+			for (int i = 0; i < 2; ++i) {
+				if (printMap[g_cProjectile.Y][g_cProjectile.X] != 1){
+					console.writeToBuffer(g_cProjectile, '|', 0x0B);
+					projKill();
+					projKill1();
+					g_cProjectile.Y -= 1;
+				}
+				else{
+					break;
+				}
+			}
+		}
+		else if (keyPressed[K_A]) {
+			g_cProjectile.X = charLocation.X - 1;
+			g_cProjectile.Y = charLocation.Y;
+			for (int i = 0; i < 2; ++i) {
+				if (printMap[g_cProjectile.Y][g_cProjectile.X] != 1){
+					console.writeToBuffer(g_cProjectile, '-', 0x0B);
+					projKill();
+					projKill1();
+					g_cProjectile.X -= 1;
+				}
+				else{
+					break;
+				}
+			}
+		}
+		else if (keyPressed[K_S]) {
+			whipdelay = 0;
+			g_cProjectile.X = charLocation.X;
+			g_cProjectile.Y = charLocation.Y + 1;
+			for (int i = 0; i < 2; ++i) {
+				if (printMap[g_cProjectile.Y][g_cProjectile.X] != 1){
+					console.writeToBuffer(g_cProjectile, '|', 0x0B);
+					projKill();
+					projKill1();
+					g_cProjectile.Y += 1;
+				}
+				else{
+					break;
+				}
+			}
+		}
+		else if (keyPressed[K_D]) {
+			g_cProjectile.X = charLocation.X + 1;
+			g_cProjectile.Y = charLocation.Y;
+			for (int i = 0; i < 2; ++i) {
+				if (printMap[g_cProjectile.Y][g_cProjectile.X] != 1){
+					console.writeToBuffer(g_cProjectile, '-', 0x0B);
+					projKill();
+					projKill1();
+					g_cProjectile.X += 1;
+				}
+				else{
+					break;
+				}
+			}
+		}
+	}
+
+
 void minimap() {
 	COORD c;
 	#define MINIMAP_WIDTH 22
@@ -496,15 +466,13 @@ void HUD() {
 		console.writeToBuffer(c, (char)235);
 	}
 }
-
-
 void randomSeed(){
     int seed = 1;
     srand(seed);
 }
 void moveMonster(){
     // CHASER MOVEMENT
-    if (delay == 10){
+    if (monsterdelay == 10){
         if (charLocation.Y < g_cChaserLoc.Y){
             g_cChaserLoc.Y -= 1;
             Beep(1440, 30);
@@ -521,7 +489,105 @@ void moveMonster(){
             g_cChaserLoc.Y += 1;
             Beep(1440, 30);
         } // down
-        delay = 0;
+        monsterdelay = 0;
     }
     collision();
+}
+void moveMonster1(){
+	// CHASER MOVEMENT
+	if (monster1delay == 10){
+		if (charLocation.Y < g_cChaser1Loc.Y){
+			g_cChaser1Loc.Y -= 1;
+			Beep(1440, 30);
+		} // up
+		if (charLocation.X < g_cChaser1Loc.X){
+			g_cChaser1Loc.X -= 1;
+			Beep(1440, 30);
+		} // left
+		if (charLocation.X > g_cChaser1Loc.X){
+			g_cChaser1Loc.X += 1;
+			Beep(1440, 30);
+		} // right
+		if (charLocation.Y > g_cChaser1Loc.Y){
+			g_cChaser1Loc.Y += 1;
+			Beep(1440, 30);
+		} // down
+		monster1delay = 0;
+	}
+	collision1();
+}
+// check if monster gets shot
+void projKill(){
+	if (g_cChaserLoc.X == g_cProjectile.X && g_cChaserLoc.Y == g_cProjectile.Y){
+		monsterDeath();
+	}
+}
+void projKill1(){
+	if (g_cChaser1Loc.X == g_cProjectile.X && g_cChaser1Loc.Y == g_cProjectile.Y){
+		monster1Death();
+	}
+}
+void monsterDeath(){
+	int spawnLocation = rand() % 3;
+	g_cChaserLoc.X = 26;
+	if (spawnLocation == 0){
+		g_cChaserLoc.Y = 2;
+	}
+	else if (spawnLocation == 1){
+		g_cChaserLoc.Y = 14;
+	}
+	else{
+		g_cChaserLoc.Y = 24;
+	}
+}
+void monster1Death(){
+	int spawnLocation = rand() % 3;
+	g_cChaser1Loc.X = 26;
+	if (spawnLocation == 0){
+		g_cChaser1Loc.Y = 14;
+	}
+	else if (spawnLocation == 1){
+		g_cChaser1Loc.Y = 24;
+	}
+	else{
+		g_cChaser1Loc.Y = 2;
+	}
+}
+void collision1(){
+	if (charLocation.X - 1 == g_cChaser1Loc.X && charLocation.Y + 1 == g_cChaser1Loc.Y){
+		monster1Death();
+		health -= 1;
+	} // Top left
+	else if (charLocation.X == g_cChaser1Loc.X && charLocation.Y + 1 == g_cChaser1Loc.Y){
+		monster1Death();
+		health -= 1;
+	} // Top Middle
+	else if (charLocation.X + 1 == g_cChaser1Loc.X && charLocation.Y + 1 == g_cChaser1Loc.Y){
+		monster1Death();
+		health -= 1;
+	} // Top Right
+	else if (charLocation.X - 1 == g_cChaser1Loc.X && charLocation.Y == g_cChaser1Loc.Y){
+		monster1Death();
+		health -= 1;
+	} // Left
+	else if (charLocation.X == g_cChaser1Loc.X  && charLocation.Y == g_cChaser1Loc.Y){
+		monster1Death();
+	} // Middle
+	else if (charLocation.X + 1 == g_cChaser1Loc.X && charLocation.Y == g_cChaser1Loc.Y){
+		monster1Death();
+		health -= 1;
+	} // Right
+
+	else if (charLocation.X - 1 == g_cChaser1Loc.X && charLocation.Y - 1 == g_cChaser1Loc.Y){
+		monster1Death();
+		health -= 1;
+	} // Btm Left
+	else if (charLocation.X == g_cChaser1Loc.X && charLocation.Y - 1 == g_cChaser1Loc.Y){
+		monster1Death();
+		health -= 1;
+	} // Btm Middle
+	else if (charLocation.X + 1 == g_cChaser1Loc.X && charLocation.Y - 1 == g_cChaser1Loc.Y){
+		monster1Death();
+		health -= 1;
+	} // Btm Right 
 }
