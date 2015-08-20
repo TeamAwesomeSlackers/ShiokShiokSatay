@@ -36,6 +36,7 @@ void randomSeed();
 void minimap();
 void HUD();
 void switchPath();
+void moveMonster();
 
 
 

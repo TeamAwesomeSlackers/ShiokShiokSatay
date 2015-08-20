@@ -129,7 +129,8 @@ void render()
 {
     clearScreen();      // clears the current screen and draw from scratch 
     renderMap();        // renders the map to the buffer first
-    renderCharacter();  // renders the character into the buffer
+    renderCharacter();
+    moveMonster();// renders the character into the buffer
     renderFramerate();  // renders debug information, frame rate, elapsed time, etc
 	renderToScreen();// dump the contents of the buffer to the screen, one frame worth of game
 }
@@ -254,28 +255,6 @@ void moveCharacter()
                 charLocation.X += 1;
             }
         }
-        // CHASER MOVEMENT
-		if (delay == 10){
-			if (charLocation.Y < g_cChaserLoc.Y){
-				g_cChaserLoc.Y -= 1;
-				Beep(1440, 30);
-			} // up
-			if (charLocation.X < g_cChaserLoc.X){
-				g_cChaserLoc.X -= 1;
-				Beep(1440, 30);
-			} // left
-			if (charLocation.X > g_cChaserLoc.X){
-				g_cChaserLoc.X += 1;
-				Beep(1440, 30);
-			} // right
-			if (charLocation.Y > g_cChaserLoc.Y){
-				g_cChaserLoc.Y += 1;
-				Beep(1440, 30);
-			} // down
-			delay = 0;
-		}
-		collision();
-
 }
 
 void switchPath() {
@@ -344,56 +323,138 @@ void renderToScreen()
 }
 //collision check/damage calculation
 void collision(){
-	if (charLocation.X - 1 == g_cChaserLoc.X && charLocation.Y + 1 == g_cChaserLoc.Y){
-		g_cChaserLoc.X = 26;
-		g_cChaserLoc.Y = 2;
+    int spawnLocation = rand() % 3;
+    if (charLocation.X - 1 == g_cChaserLoc.X && charLocation.Y + 1 == g_cChaserLoc.Y){
+        g_cChaserLoc.X = 26;
+        if (spawnLocation == 0){
+            g_cChaserLoc.Y = 2;
+        }
+        else if (spawnLocation == 1){
+            g_cChaserLoc.Y = 14;
+        }
+        else{
+            g_cChaserLoc.Y = 24;
+
+        }
 		health -= 1;
 	} // Top left
 	else if (charLocation.X == g_cChaserLoc.X && charLocation.Y + 1 == g_cChaserLoc.Y){
 		g_cChaserLoc.X = 26;
-		g_cChaserLoc.Y = 2;
+        if (spawnLocation == 0){
+            g_cChaserLoc.Y = 2;
+        }
+        else if (spawnLocation == 1){
+            g_cChaserLoc.Y = 14;
+        }
+        else{
+            g_cChaserLoc.Y = 24;
+
+        }
 		health -= 1;
 	} // Top Middle
 	else if (charLocation.X + 1 == g_cChaserLoc.X && charLocation.Y + 1 == g_cChaserLoc.Y){
 		g_cChaserLoc.X = 26;
-		g_cChaserLoc.Y = 2;
+        if (spawnLocation == 0){
+            g_cChaserLoc.Y = 2;
+        }
+        else if (spawnLocation == 1){
+            g_cChaserLoc.Y = 14;
+        }
+        else{
+            g_cChaserLoc.Y = 24;
+
+        }
 		health -= 1;
 	} // Top Right
 	else if (charLocation.X - 1 == g_cChaserLoc.X && charLocation.Y == g_cChaserLoc.Y){
 		g_cChaserLoc.X = 26;
-		g_cChaserLoc.Y = 2;
+        if (spawnLocation == 0){
+            g_cChaserLoc.Y = 2;
+        }
+        else if (spawnLocation == 1){
+            g_cChaserLoc.Y = 14;
+        }
+        else{
+            g_cChaserLoc.Y = 24;
+
+        }
 		gotoXY(g_cChaserLoc);
 		health -= 1;
 	} // Left
 	else if (charLocation.X == g_cChaserLoc.X  && charLocation.Y == g_cChaserLoc.Y){
 		g_cChaserLoc.X = 26;
-		g_cChaserLoc.Y = 2;
+        if (spawnLocation == 0){
+            g_cChaserLoc.Y = 2;
+        }
+        else if (spawnLocation == 1){
+            g_cChaserLoc.Y = 14;
+        }
+        else{
+            g_cChaserLoc.Y = 24;
+
+        }
 		health -= 1;
 
 	} // Middle
 	else if (charLocation.X + 1 == g_cChaserLoc.X && charLocation.Y == g_cChaserLoc.Y){
 		g_cChaserLoc.X = 26;
-		g_cChaserLoc.Y = 2;
+        if (spawnLocation == 0){
+            g_cChaserLoc.Y = 2;
+        }
+        else if (spawnLocation == 1){
+            g_cChaserLoc.Y = 14;
+        }
+        else{
+            g_cChaserLoc.Y = 24;
+
+        }
 		health -= 1;
 	} // Right
 
 	else if (charLocation.X - 1 == g_cChaserLoc.X && charLocation.Y - 1 == g_cChaserLoc.Y){
 		g_cChaserLoc.X = 26;
-		g_cChaserLoc.Y = 2;
+        if (spawnLocation == 0){
+            g_cChaserLoc.Y = 2;
+        }
+        else if (spawnLocation == 1){
+            g_cChaserLoc.Y = 14;
+        }
+        else{
+            g_cChaserLoc.Y = 24;
+
+        }
 		health -= 1;
 	} // Btm Left
 	else if (charLocation.X == g_cChaserLoc.X && charLocation.Y - 1 == g_cChaserLoc.Y){
 		g_cChaserLoc.X = 26;
-		g_cChaserLoc.Y = 2;
+        if (spawnLocation == 0){
+            g_cChaserLoc.Y = 2;
+        }
+        else if (spawnLocation == 1){
+            g_cChaserLoc.Y = 14;
+        }
+        else{
+            g_cChaserLoc.Y = 24;
+
+        }
 		health -= 1;
 	} // Btm Middle
 	else if (charLocation.X + 1 == g_cChaserLoc.X && charLocation.Y - 1 == g_cChaserLoc.Y){
 		g_cChaserLoc.X = 26;
-		g_cChaserLoc.Y = 2;
+        if (spawnLocation == 0){
+            g_cChaserLoc.Y = 2;
+        }
+        else if (spawnLocation == 1){
+            g_cChaserLoc.Y = 14;
+        }
+        else{
+            g_cChaserLoc.Y = 24;
+
+        }
 		health -= 1;
 	} // Btm Right 
 }
-
+// MINIMAp
 void minimap() {
 	COORD c;
 	#define MINIMAP_WIDTH 22
@@ -438,6 +499,29 @@ void HUD() {
 
 
 void randomSeed(){
-    int seed = 0;
+    int seed = 1;
     srand(seed);
+}
+void moveMonster(){
+    // CHASER MOVEMENT
+    if (delay == 2){
+        if (charLocation.Y < g_cChaserLoc.Y){
+            g_cChaserLoc.Y -= 1;
+            Beep(1440, 30);
+        } // up
+        if (charLocation.X < g_cChaserLoc.X){
+            g_cChaserLoc.X -= 1;
+            Beep(1440, 30);
+        } // left
+        if (charLocation.X > g_cChaserLoc.X){
+            g_cChaserLoc.X += 1;
+            Beep(1440, 30);
+        } // right
+        if (charLocation.Y > g_cChaserLoc.Y){
+            g_cChaserLoc.Y += 1;
+            Beep(1440, 30);
+        } // down
+        delay = 0;
+    }
+    collision();
 }
